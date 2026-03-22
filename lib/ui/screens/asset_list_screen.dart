@@ -49,8 +49,7 @@ class _AssetListScreenState extends State<AssetListScreen> {
             Expanded(
               child: ListView.separated(
                 itemCount: provider.assets.length,
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 16),
+                separatorBuilder: (context, index) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final item = provider.assets[index];
                   return _assetTile(context, provider, item);
@@ -69,9 +68,7 @@ class _AssetListScreenState extends State<AssetListScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            const AppBottomNav(
-              currentRoute: AppRouter.customize,
-            ),
+            const AppBottomNav(currentRoute: AppRouter.customize),
           ],
         ),
       ),
@@ -109,6 +106,14 @@ class _AssetListScreenState extends State<AssetListScreen> {
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   Text(item.description),
+                  if (item.purchaseDate.isNotEmpty)
+                    Text(
+                      'Ngày mua: ${item.purchaseDate}',
+                      style: TextStyle(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -140,14 +145,17 @@ class _AssetListScreenState extends State<AssetListScreen> {
     CustomizeProvider provider, {
     AssetModel? initialItem,
   }) async {
-    final nameController = TextEditingController(
-      text: initialItem?.assetName ?? '',
-    );
+    final nameController = TextEditingController(text: initialItem?.assetName ?? '');
     final amountController = TextEditingController(
       text: initialItem?.amount.toString() ?? '',
     );
     final descriptionController = TextEditingController(
       text: initialItem?.description ?? '',
+    );
+    final purchaseDateController = TextEditingController(
+      text: initialItem?.purchaseDate.isNotEmpty == true
+          ? initialItem!.purchaseDate
+          : '15/10/2024',
     );
 
     final saved = await showDialog<bool>(
@@ -164,12 +172,34 @@ class _AssetListScreenState extends State<AssetListScreen> {
               ),
               TextField(
                 controller: amountController,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: const InputDecoration(labelText: 'Số tiền'),
               ),
               TextField(
                 controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Mô tả'),
+              ),
+              TextField(
+                controller: purchaseDateController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Ngày mua',
+                  suffixIcon: IconButton(
+                    onPressed: () async {
+                      final picked = await showDatePicker(
+                        context: dialogContext,
+                        initialDate: DateTime(2024, 10, 15),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked == null) return;
+                      final day = picked.day.toString().padLeft(2, '0');
+                      final month = picked.month.toString().padLeft(2, '0');
+                      purchaseDateController.text = '$day/$month/${picked.year}';
+                    },
+                    icon: const Icon(Icons.calendar_today_outlined),
+                  ),
+                ),
               ),
             ],
           ),
@@ -196,11 +226,11 @@ class _AssetListScreenState extends State<AssetListScreen> {
         assetName: nameController.text.trim(),
         amount: double.tryParse(amountController.text.trim()) ?? 0,
         description: descriptionController.text.trim(),
+        purchaseDate: purchaseDateController.text.trim(),
       ),
     );
 
     if (!mounted) return;
-
     if (!success) {
       ScaffoldMessenger.of(this.context).showSnackBar(
         SnackBar(content: Text(provider.errorMessage ?? 'Không thể lưu tài sản')),

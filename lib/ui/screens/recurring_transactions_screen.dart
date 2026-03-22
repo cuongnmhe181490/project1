@@ -147,7 +147,7 @@ class _RecurringTransactionsScreenState
                                               amount: item.amount,
                                               startDate: item.startDate,
                                               repeatCycle: item.repeatCycle,
-                                              note: item.title,
+                                              note: item.note,
                                             ),
                                           ),
                                           icon: const Icon(Icons.edit_outlined),

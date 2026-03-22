@@ -446,6 +446,7 @@ class FakeCustomizeRepository extends CustomizeRepository {
       userId: 1,
       assetName: 'Vàng Bạc',
       amount: 3700,
+      purchaseDate: '15/10/2024',
       description: 'Tài sản tài chính',
     ),
   ];
@@ -459,6 +460,7 @@ class FakeCustomizeRepository extends CustomizeRepository {
       startDate: '01/10/2024',
       repeatCycle: 'Hàng Tháng',
       type: 'income',
+      note: 'Luong',
     ),
   ];
 
@@ -547,6 +549,7 @@ class FakeCustomizeRepository extends CustomizeRepository {
         assetName: model.assetName,
         amount: model.amount,
         description: model.description,
+        purchaseDate: model.purchaseDate,
       ),
     );
   }
@@ -583,6 +586,7 @@ class FakeCustomizeRepository extends CustomizeRepository {
         startDate: model.startDate,
         repeatCycle: model.repeatCycle,
         type: model.categoryId == 1 ? 'income' : 'expense',
+        note: model.note,
       ),
     );
   }
@@ -600,6 +604,7 @@ class FakeCustomizeRepository extends CustomizeRepository {
         startDate: model.startDate,
         repeatCycle: model.repeatCycle,
         type: model.categoryId == 1 ? 'income' : 'expense',
+        note: model.note,
       );
     }
   }

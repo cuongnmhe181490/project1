@@ -39,19 +39,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _pickBirthDate() async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: DateTime(2004, 1, 1),
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
     );
-
     if (picked == null) return;
 
     final day = picked.day.toString().padLeft(2, '0');
     final month = picked.month.toString().padLeft(2, '0');
-    final year = picked.year.toString();
-    _birthDateController.text = '$day / $month / $year';
+    _birthDateController.text = '$day / $month / ${picked.year}';
     setState(() {});
   }
 
@@ -89,151 +87,162 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 360,
-            height: 720,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Scaffold(
-                backgroundColor: primary,
-                body: Column(
-                  children: [
-                    const SizedBox(height: 36),
-                    const Text(
-                      'Tạo Tài Khoản',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 32),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: ColoredBox(
+                        color: primary,
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 36),
+                            const Text(
+                              'Tạo Tài Khoản',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.fromLTRB(22, 28, 22, 20),
+                              decoration: const BoxDecoration(
+                                color: lightBg,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(42),
+                                  topRight: Radius.circular(42),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  AuthTextField(
+                                    label: 'Tên Đầy Đủ',
+                                    hintText: 'Nhập họ và tên',
+                                    controller: _fullNameController,
+                                  ),
+                                  const SizedBox(height: 14),
+                                  AuthTextField(
+                                    label: 'Email',
+                                    hintText: 'example@example.com',
+                                    controller: _emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                  ),
+                                  const SizedBox(height: 14),
+                                  AuthTextField(
+                                    label: 'Số Điện Thoại',
+                                    hintText: '+ 123 456 789',
+                                    controller: _phoneController,
+                                    keyboardType: TextInputType.phone,
+                                  ),
+                                  const SizedBox(height: 14),
+                                  AuthTextField(
+                                    label: 'Ngày Sinh',
+                                    hintText: 'DD / MM / YYYY',
+                                    controller: _birthDateController,
+                                    readOnly: true,
+                                    onTap: _pickBirthDate,
+                                    suffixIcon: IconButton(
+                                      onPressed: _pickBirthDate,
+                                      icon: const Icon(
+                                        Icons.calendar_today_outlined,
+                                        size: 18,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  AuthTextField(
+                                    label: 'Mật Khẩu',
+                                    hintText: '••••••••••',
+                                    controller: _passwordController,
+                                    obscureText: _obscurePassword,
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscurePassword = !_obscurePassword;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
+                                        size: 20,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  AuthTextField(
+                                    label: 'Xác Nhận Mật Khẩu',
+                                    hintText: '••••••••••',
+                                    controller: _confirmPasswordController,
+                                    obscureText: _obscureConfirmPassword,
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscureConfirmPassword =
+                                              !_obscureConfirmPassword;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        _obscureConfirmPassword
+                                            ? Icons.visibility_off_outlined
+                                            : Icons.visibility_outlined,
+                                        size: 20,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 28),
+                                  AuthButton(
+                                    text: authProvider.isLoading
+                                        ? 'Đang xử lý...'
+                                        : 'Đăng Ký',
+                                    onPressed: authProvider.isLoading
+                                        ? null
+                                        : _handleRegister,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      'Đã có tài khoản? Đăng nhập',
+                                      style: TextStyle(
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 28),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(22, 28, 22, 20),
-                        decoration: const BoxDecoration(
-                          color: lightBg,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(42),
-                            topRight: Radius.circular(42),
-                          ),
-                        ),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              AuthTextField(
-                                label: 'Tên Đầy Đủ',
-                                hintText: 'Nhập họ và tên',
-                                controller: _fullNameController,
-                              ),
-                              const SizedBox(height: 14),
-                              AuthTextField(
-                                label: 'Email',
-                                hintText: 'example@example.com',
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                              ),
-                              const SizedBox(height: 14),
-                              AuthTextField(
-                                label: 'Số Điện Thoại',
-                                hintText: '+ 123 456 789',
-                                controller: _phoneController,
-                                keyboardType: TextInputType.phone,
-                              ),
-                              const SizedBox(height: 14),
-                              AuthTextField(
-                                label: 'Ngày Sinh',
-                                hintText: 'DD / MM / YYYY',
-                                controller: _birthDateController,
-                                readOnly: true,
-                                onTap: _pickBirthDate,
-                                suffixIcon: IconButton(
-                                  onPressed: _pickBirthDate,
-                                  icon: const Icon(
-                                    Icons.calendar_today_outlined,
-                                    size: 18,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              AuthTextField(
-                                label: 'Mật Khẩu',
-                                hintText: '••••••••••',
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                    size: 20,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              AuthTextField(
-                                label: 'Xác Nhận Mật Khẩu',
-                                hintText: '••••••••••',
-                                controller: _confirmPasswordController,
-                                obscureText: _obscureConfirmPassword,
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscureConfirmPassword =
-                                          !_obscureConfirmPassword;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    _obscureConfirmPassword
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                    size: 20,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 28),
-                              AuthButton(
-                                text: authProvider.isLoading
-                                    ? 'Đang xử lý...'
-                                    : 'Đăng Ký',
-                                onPressed: authProvider.isLoading
-                                    ? null
-                                    : _handleRegister,
-                              ),
-                              const SizedBox(height: 16),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text(
-                                  'Đã có tài khoản? Đăng nhập',
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

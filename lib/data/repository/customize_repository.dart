@@ -26,6 +26,7 @@ class RecurringItem {
     required this.startDate,
     required this.repeatCycle,
     required this.type,
+    required this.note,
   });
 
   final int id;
@@ -36,6 +37,7 @@ class RecurringItem {
   final String startDate;
   final String repeatCycle;
   final String type;
+  final String note;
 }
 
 class CustomizeRepository {
@@ -132,6 +134,7 @@ class CustomizeRepository {
             startDate: (row['start_date'] as String?) ?? '',
             repeatCycle: (row['repeat_cycle'] as String?) ?? '',
             type: (row['category_type'] as String?) ?? type,
+            note: (row['note'] as String?) ?? '',
           ),
         )
         .toList();

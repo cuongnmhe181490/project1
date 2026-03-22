@@ -15,7 +15,7 @@ class DatabaseHelper {
 
     _database = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await _createTables(db);
         await _seedDemoData(db);
@@ -23,6 +23,11 @@ class DatabaseHelper {
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
           await _seedDemoData(db);
+        }
+        if (oldVersion < 3) {
+          await db.execute(
+            'ALTER TABLE Asset ADD COLUMN purchase_date TEXT DEFAULT ""',
+          );
         }
       },
     );
@@ -131,6 +136,7 @@ class DatabaseHelper {
         asset_name TEXT,
         amount REAL,
         description TEXT,
+        purchase_date TEXT,
         FOREIGN KEY(user_id) REFERENCES User(id)
       )
     ''');
@@ -377,12 +383,14 @@ class DatabaseHelper {
           'asset_name': 'Vang Bac',
           'amount': 3700.0,
           'description': 'Tai san tai chinh',
+          'purchase_date': '15/10/2024',
         },
         {
           'user_id': 1,
           'asset_name': 'Xe Co',
           'amount': 3000.0,
           'description': 'Tai san vat ly',
+          'purchase_date': '15/10/2024',
         },
       ];
       for (final item in assets) {
@@ -521,6 +529,13 @@ class DatabaseHelper {
         whereArgs: [item['id'], 1],
       );
     }
+
+    batch.update(
+      'Asset',
+      {'purchase_date': '15/10/2024'},
+      where: '(purchase_date IS NULL OR purchase_date = "") AND user_id = ?',
+      whereArgs: [1],
+    );
 
     await batch.commit(noResult: true);
   }
