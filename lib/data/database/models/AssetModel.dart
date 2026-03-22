@@ -4,6 +4,7 @@ class AssetModel {
   final String assetName;
   final double amount;
   final String description;
+  final String purchaseDate;
 
   AssetModel({
     this.id,
@@ -11,6 +12,7 @@ class AssetModel {
     required this.assetName,
     required this.amount,
     required this.description,
+    required this.purchaseDate,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class AssetModel {
       'asset_name': assetName,
       'amount': amount,
       'description': description,
+      'purchase_date': purchaseDate,
     };
   }
 
@@ -30,6 +33,7 @@ class AssetModel {
       assetName: map['asset_name'],
       amount: map['amount'],
       description: map['description'],
+      purchaseDate: (map['purchase_date'] as String?) ?? '',
     );
   }
 }

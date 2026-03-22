@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.pushReplacementNamed(context, AppRouter.budgetList);
+      Navigator.pushReplacementNamed(context, AppRouter.home);
       return;
     }
 
@@ -224,11 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
         shape: BoxShape.circle,
         border: Border.all(color: Colors.black54, width: 1),
       ),
-      child: Icon(
-        icon,
-        size: 22,
-        color: Colors.black54,
-      ),
+      child: Icon(icon, size: 22, color: Colors.black54),
     );
   }
 }
