@@ -5,6 +5,7 @@ import '../../data/database/models/AssetModel.dart';
 import '../../router/app_router.dart';
 import '../provider/customize_provider.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/app_secondary_shell.dart';
 
 class AssetListScreen extends StatefulWidget {
   const AssetListScreen({super.key});
@@ -30,68 +31,48 @@ class _AssetListScreenState extends State<AssetListScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<CustomizeProvider>();
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade300,
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 390,
-            height: 800,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Scaffold(
-                backgroundColor: primary,
-                body: Column(
-                  children: [
-                    _topBar('Quản Lý Tài Sản'),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
-                        decoration: const BoxDecoration(
-                          color: lightBg,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            topRight: Radius.circular(30),
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: provider.assets.length,
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(height: 16),
-                                itemBuilder: (context, index) {
-                                  final item = provider.assets[index];
-                                  return _assetTile(context, provider, item);
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: 140,
-                              child: ElevatedButton(
-                                onPressed: () => _openAssetDialog(context, provider),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: primary,
-                                  foregroundColor: const Color(0xFF163C3C),
-                                ),
-                                child: const Text('Thêm Tài Sản'),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            const AppBottomNav(
-                              currentRoute: AppRouter.customize,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    return AppSecondaryShell(
+      primaryColor: primary,
+      header: _topBar('Quản Lý Tài Sản'),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
+        decoration: const BoxDecoration(
+          color: lightBg,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.separated(
+                itemCount: provider.assets.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final item = provider.assets[index];
+                  return _assetTile(context, provider, item);
+                },
               ),
             ),
-          ),
+            SizedBox(
+              width: 160,
+              child: ElevatedButton(
+                onPressed: () => _openAssetDialog(context, provider),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  foregroundColor: const Color(0xFF163C3C),
+                ),
+                child: const Text('Thêm Tài Sản'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const AppBottomNav(
+              currentRoute: AppRouter.customize,
+            ),
+          ],
         ),
       ),
     );
@@ -139,7 +120,8 @@ class _AssetListScreenState extends State<AssetListScreen> {
               ),
             ),
             IconButton(
-              onPressed: () => _openAssetDialog(context, provider, initialItem: item),
+              onPressed: () =>
+                  _openAssetDialog(context, provider, initialItem: item),
               icon: const Icon(Icons.edit_outlined),
             ),
             IconButton(

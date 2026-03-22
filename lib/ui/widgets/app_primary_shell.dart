@@ -27,81 +27,91 @@ class AppPrimaryShell extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
       body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 390,
-            height: 800,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Scaffold(
-                backgroundColor: primaryColor,
-                body: Column(
-                  children: [
-                    header,
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.fromLTRB(
-                              18,
-                              18,
-                              18,
-                              showAddButton ? 120 : 88,
-                            ),
-                            decoration: BoxDecoration(
-                              color: bodyColor,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isLandscape = constraints.maxWidth > constraints.maxHeight;
+            final shellWidth = isLandscape
+                ? constraints.maxWidth.clamp(0.0, 900.0)
+                : constraints.maxWidth;
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: shellWidth,
+                  maxHeight: constraints.maxHeight,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(isLandscape ? 24 : 0),
+                  child: Scaffold(
+                    backgroundColor: primaryColor,
+                    body: Column(
+                      children: [
+                        header,
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.fromLTRB(
+                                  isLandscape ? 28 : 18,
+                                  18,
+                                  isLandscape ? 28 : 18,
+                                  showAddButton ? 120 : 88,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: bodyColor,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(30),
+                                    topRight: Radius.circular(30),
+                                  ),
+                                ),
+                                child: body,
                               ),
-                            ),
-                            child: body,
-                          ),
-                          Positioned(
-                            left: 18,
-                            right: 18,
-                            bottom: 12,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (showAddButton) ...[
-                                  Center(
-                                    child: GestureDetector(
-                                      onTap: onAddTap,
-                                      child: Container(
-                                        width: 72,
-                                        height: 38,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                            color: const Color(0xFF143C3C),
+                              Positioned(
+                                left: isLandscape ? 28 : 18,
+                                right: isLandscape ? 28 : 18,
+                                bottom: 12,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (showAddButton) ...[
+                                      Center(
+                                        child: GestureDetector(
+                                          onTap: onAddTap,
+                                          child: Container(
+                                            width: 72,
+                                            height: 38,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                color: const Color(0xFF143C3C),
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: const Icon(
+                                              Icons.add,
+                                              color: Color(0xFF143C3C),
+                                            ),
                                           ),
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.add,
-                                          color: Color(0xFF143C3C),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                ],
-                                AppBottomNav(currentRoute: currentRoute),
-                              ],
-                            ),
+                                      const SizedBox(height: 12),
+                                    ],
+                                    AppBottomNav(currentRoute: currentRoute),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

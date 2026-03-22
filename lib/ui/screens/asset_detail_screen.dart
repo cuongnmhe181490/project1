@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../data/database/models/AssetModel.dart';
+import '../widgets/app_secondary_shell.dart';
 
 class AssetDetailScreen extends StatelessWidget {
   const AssetDetailScreen({super.key});
@@ -12,20 +13,9 @@ class AssetDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final asset = ModalRoute.of(context)?.settings.arguments as AssetModel?;
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade300,
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 390,
-            height: 800,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Scaffold(
-                backgroundColor: primary,
-                body: Column(
-                  children: [
-                    Padding(
+    return AppSecondaryShell(
+      primaryColor: primary,
+      header: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 18, 20, 18),
                       child: Row(
                         children: [
@@ -57,8 +47,7 @@ class AssetDetailScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: Container(
+      body: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
                         decoration: const BoxDecoration(
@@ -81,32 +70,25 @@ class AssetDetailScreen extends StatelessWidget {
                             _fieldChip('Loại', asset?.description ?? ''),
                             const SizedBox(height: 10),
                             _fieldChip('Ghi Chú', asset?.description ?? ''),
-                            const Spacer(),
-                            Container(
-                              height: 170,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.bar_chart_rounded,
-                                  size: 72,
-                                  color: Color(0xFF1D6FFF),
+                            Expanded(
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.bar_chart_rounded,
+                                    size: 72,
+                                    color: Color(0xFF1D6FFF),
+                                  ),
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 

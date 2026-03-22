@@ -5,6 +5,7 @@ import '../../data/database/models/BudgetModel.dart';
 import '../../router/app_router.dart';
 import '../provider/budget_provider.dart';
 import '../widgets/app_bottom_nav.dart';
+import '../widgets/app_secondary_shell.dart';
 
 class BudgetListScreen extends StatefulWidget {
   const BudgetListScreen({super.key});
@@ -31,163 +32,136 @@ class _BudgetListScreenState extends State<BudgetListScreen> {
     final provider = context.watch<BudgetProvider>();
     final budgets = provider.budgets;
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade300,
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: 390,
-            height: 800,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Scaffold(
-                backgroundColor: primary,
-                body: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 18, 20, 18),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-                            color: Colors.white,
-                          ),
-                          const Expanded(
-                            child: Text(
-                              'Hạn Mức Chi',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF113939),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.85),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.notifications_none_rounded,
-                              size: 18,
-                              color: Color(0xFF155050),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(20, 26, 20, 12),
-                        decoration: const BoxDecoration(
-                          color: lightBg,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(42),
-                            topRight: Radius.circular(42),
-                          ),
-                        ),
-                        child: provider.isLoading
-                            ? const Center(child: CircularProgressIndicator())
-                            : Column(
-                                children: [
-                                  Expanded(
-                                    child: budgets.isEmpty
-                                        ? const Center(
-                                            child: Text(
-                                              'Chưa có hạn mức nào',
-                                              style: TextStyle(fontSize: 16),
-                                            ),
-                                          )
-                                        : ListView.separated(
-                                            itemCount: budgets.length,
-                                            separatorBuilder: (context, index) =>
-                                                const SizedBox(height: 16),
-                                            itemBuilder: (context, index) {
-                                              final budget = budgets[index];
-                                              final spent = provider
-                                                      .spentByCategory[budget
-                                                          .categoryId] ??
-                                                  0;
-                                              return _BudgetTile(
-                                                budget: budget,
-                                                spentAmount: spent,
-                                                onTap: () {
-                                                  Navigator.pushNamed(
-                                                    context,
-                                                    AppRouter.budgetDetail,
-                                                    arguments: budget,
-                                                  );
-                                                },
-                                                onEdit: () async {
-                                                  final updated =
-                                                      await Navigator.pushNamed(
-                                                            context,
-                                                            AppRouter.addBudget,
-                                                            arguments: budget,
-                                                          )
-                                                          as bool?;
-                                                  if (updated == true && mounted) {
-                                                    await this.context
-                                                        .read<BudgetProvider>()
-                                                        .loadBudgets();
-                                                  }
-                                                },
-                                                onDelete: () => _deleteBudget(
-                                                  context,
-                                                  budget,
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  SizedBox(
-                                    width: 150,
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        final created =
-                                            await Navigator.pushNamed(
-                                                  context,
-                                                  AppRouter.addBudget,
-                                                )
-                                                as bool?;
-                                        if (created == true && mounted) {
-                                          await this.context
-                                              .read<BudgetProvider>()
-                                              .loadBudgets();
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: primary,
-                                        foregroundColor: const Color(0xFF123E3E),
-                                        elevation: 0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(24),
-                                        ),
-                                      ),
-                                      child: const Text('Thêm Hạn Mức'),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const AppBottomNav(
-                                    currentRoute: AppRouter.customize,
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ],
+    return AppSecondaryShell(
+      primaryColor: primary,
+      header: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 18, 20, 18),
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              color: Colors.white,
+            ),
+            const Expanded(
+              child: Text(
+                'Hạn Mức Chi',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF113939),
                 ),
               ),
             ),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.85),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.notifications_none_rounded,
+                size: 18,
+                color: Color(0xFF155050),
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(20, 26, 20, 12),
+        decoration: const BoxDecoration(
+          color: lightBg,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(42),
+            topRight: Radius.circular(42),
           ),
         ),
+        child: provider.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(
+                    child: budgets.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Chưa có hạn mức nào',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: budgets.length,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final budget = budgets[index];
+                              final spent =
+                                  provider.spentByCategory[budget.categoryId] ??
+                                  0;
+                              return _BudgetTile(
+                                budget: budget,
+                                spentAmount: spent,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRouter.budgetDetail,
+                                    arguments: budget,
+                                  );
+                                },
+                                onEdit: () async {
+                                  final updated =
+                                      await Navigator.pushNamed(
+                                            context,
+                                            AppRouter.addBudget,
+                                            arguments: budget,
+                                          )
+                                          as bool?;
+                                  if (updated == true && mounted) {
+                                    await this.context
+                                        .read<BudgetProvider>()
+                                        .loadBudgets();
+                                  }
+                                },
+                                onDelete: () => _deleteBudget(context, budget),
+                              );
+                            },
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final created =
+                            await Navigator.pushNamed(
+                                  context,
+                                  AppRouter.addBudget,
+                                )
+                                as bool?;
+                        if (created == true && mounted) {
+                          await this.context.read<BudgetProvider>().loadBudgets();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        foregroundColor: const Color(0xFF123E3E),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      child: const Text('Thêm Hạn Mức'),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const AppBottomNav(
+                    currentRoute: AppRouter.customize,
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -343,7 +317,10 @@ class _BudgetTile extends StatelessWidget {
     case 3:
       return (icon: Icons.restaurant_rounded, color: const Color(0xFF7EB8FF));
     case 4:
-      return (icon: Icons.shopping_bag_outlined, color: const Color(0xFF79AFFF));
+      return (
+        icon: Icons.shopping_bag_outlined,
+        color: const Color(0xFF79AFFF),
+      );
     case 5:
       return (icon: Icons.home_work_outlined, color: const Color(0xFF79AFFF));
     default:

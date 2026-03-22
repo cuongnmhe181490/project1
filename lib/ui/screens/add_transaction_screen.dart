@@ -181,10 +181,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     return Scaffold(
       backgroundColor: Colors.black.withValues(alpha: 0.25),
       body: SafeArea(
-        child: Center(
-          child: Container(
-            width: 360,
-            constraints: const BoxConstraints(maxHeight: 720),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final popupWidth = constraints.maxWidth > 700
+                ? 520.0
+                : (constraints.maxWidth - 40).clamp(320.0, 420.0);
+
+            return Center(
+              child: Container(
+            width: popupWidth,
+            constraints: BoxConstraints(maxHeight: constraints.maxHeight - 40),
             margin: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -380,6 +386,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ],
                   ),
           ),
+            );
+          },
         ),
       ),
     );
